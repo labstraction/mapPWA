@@ -95,7 +95,7 @@ class MapViewer extends HTMLElement {
       fillOpacity: 0.4
     };
 
-    fetch("/map/world.json")
+    fetch("./map/world.json")
       .then(resp => resp.json())
       .then(json => {
         console.log(json)
