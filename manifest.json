@@ -1,6 +1,13 @@
 {
   "name": "map PWA",
   "short_name": "map",
+  "description": "map PWA test",
+  "scope": "/mapPWA/",
+  "start_url": "/mapPWA/",
+  "lang": "en-US",
+  "display": "standalone",
+  "background_color": "black",
+  "theme_color": "black",
   "icons": [{
     "src": "images/icon_128.png",
       "sizes": "128x128",
@@ -25,10 +32,5 @@
       "src": "images/icon_512.png",
       "sizes": "512x512",
       "type": "image/png"
-    }],
-  "lang": "en-US",
-  "start_url": "/index.html",
-  "display": "standalone",
-  "background_color": "black",
-  "theme_color": "black"
+    }]
 }

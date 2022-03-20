@@ -121,7 +121,6 @@ class MapViewer extends HTMLElement {
 
 
   initGeoJSONOverlays() {
-    console.log(this.geoJSONOverlaysUrl)
     if (this.geoJSONOverlaysUrl) {
       fetch(this.geoJSONOverlaysUrl)
         .then(resp => resp.json())
