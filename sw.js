@@ -1,14 +1,14 @@
 var cacheName = 'sindbad-pwa';
 var filesToCache = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/css/leaflet.min.css',
-  '/js/main.js',
-  '/js/leaflet.min.js',
-  '/js/map-viewer.js',
-  '/settings/wms.json',
-  '/map/world.json'
+  './',
+  './index.html',
+  './css/style.css',
+  './css/leaflet.min.css',
+  './js/main.js',
+  './js/leaflet.min.js',
+  './js/map-viewer.js',
+  './settings/wms.json',
+  './map/world.json'
 ];
 
 /* Start the service worker and cache all of the app's content */
