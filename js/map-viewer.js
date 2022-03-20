@@ -77,6 +77,8 @@ class MapViewer extends HTMLElement {
 
     this.map = L.map(mapDiv, mapOptions).setView([this.lat, this.lng], this.zoom);
 
+    this.map.zoomControl.setPosition('bottomright');
+
   }
 
 

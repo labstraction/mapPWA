@@ -6,6 +6,8 @@ var filesToCache = [
   '/css/leaflet.min.css',
   '/js/main.js',
   '/js/leaflet.min.js',
+  '/js/map-viewer.js',
+  '/settings/wms.json',
   '/map/world.json'
 ];
 

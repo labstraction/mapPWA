@@ -1,28 +1,28 @@
 {
-  "name": "Sindbad PWA",
-  "short_name": "Hello",
+  "name": "map PWA",
+  "short_name": "map",
   "icons": [{
-    "src": "images/icon.png",
+    "src": "images/icon_128.png",
       "sizes": "128x128",
       "type": "image/png"
     }, {
-      "src": "images/icon.png",
+      "src": "images/icon_144.png",
       "sizes": "144x144",
       "type": "image/png"
     }, {
-      "src": "images/icon.png",
+      "src": "images/icon_152.png",
       "sizes": "152x152",
       "type": "image/png"
     }, {
-      "src": "images/icon.png",
+      "src": "images/icon_192.png",
       "sizes": "192x192",
       "type": "image/png"
     }, {
-      "src": "images/icon.png",
+      "src": "images/icon_256.png",
       "sizes": "256x256",
       "type": "image/png"
     }, {
-      "src": "images/icon.png",
+      "src": "images/icon_512.png",
       "sizes": "512x512",
       "type": "image/png"
     }],
