@@ -5,10 +5,28 @@ body {
 
 html, body{
   display: flex;
+  flex-direction: column;
   height: 100%;
   margin: 0;
   padding: 0;
   width: 100%;
 }
 
+
+map-viewer{
+  flex-grow: 1;
+}
+
+map-legend{
+  flex-grow: 1;
+  max-height: 18px;
+}
+
+logo-menu{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: teal;
+  z-index: 10000;
+}
 

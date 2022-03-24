@@ -1,4 +1,11 @@
+// import * from "./leaflet/leaflet.min.js";
+// var L = import("./leaflet/leaflet.min.js");
+'use strict'
+
+
 class MapViewer extends HTMLElement {
+
+
 
   constructor() {
     super();
@@ -14,17 +21,15 @@ class MapViewer extends HTMLElement {
     } else {
       this.initDefaultLayer()
     }
-    //sthis.initWmsOverlays()
-    this.initGeoJSONOverlays()
+    this.initOverlays()
   }
 
   defineAttributes() {
-    this.lat = this.getAttributeOrDefault('lat', '51.505');
-    this.lng = this.getAttributeOrDefault('lng', '-0.09');
-    this.zoom = this.getAttributeOrDefault('zoom', '3');
+    this.lat = parseFloat(this.getAttributeOrDefault('lat', '51.505'));
+    this.lng = parseFloat(this.getAttributeOrDefault('lng', '-0.09'));
+    this.zoom = parseInt(this.getAttributeOrDefault('zoom', '3'));
     this.baseLayersUrl = this.getAttributeOrDefault('base-layers-url', "");
-    this.wmsOverlaysUrl = this.getAttributeOrDefault('wms-overlays-url', "");
-    this.geoJSONOverlaysUrl = this.getAttributeOrDefault('geo-json-overlays-url', "");
+    this.overlaysUrl = this.getAttributeOrDefault('overlays-url', "");
     this.theme = this.getAttributeOrDefault('theme', '#313131');
   }
 
@@ -39,16 +44,18 @@ class MapViewer extends HTMLElement {
 
   initTag() {
 
-    this.style.height = '100%';
-    this.style.width = '100%';
-
 
     const style = document.createElement('style');
     style.textContent = `
-    .leaflet-control, .leaflet-control a{
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip, .leaflet-control, .leaflet-control a{
       background-color: ${this.theme} !important;
       color: ${this.contrastingColor(this.theme)} !important;
       border-color: ${this.contrastingColor(this.theme)}70 !important;
+    }
+    .leaflet-control-layers-toggle{
+      background-image: url(./images/layers-${this.contrastingColor(this.theme) === '#000000'? 'black' : 'white'}.svg) !important;
+      width: 30px !important;
+      height: 30px !important;
     }`
 
     this.shadowRoot.appendChild(style);
@@ -78,6 +85,7 @@ class MapViewer extends HTMLElement {
     this.map = L.map(mapDiv, mapOptions).setView([this.lat, this.lng], this.zoom);
 
     this.map.zoomControl.setPosition('bottomright');
+    this.layersControl = L.control.layers().addTo(this.map);
 
   }
 
@@ -103,30 +111,28 @@ class MapViewer extends HTMLElement {
       });
   }
 
-  initWmsOverlays() {
-    if (this.wmsOverlaysUrl) {
-      fetch(this.wmsOverlaysUrl)
+  initOverlays() {
+    if (this.overlaysUrl) {
+      fetch(this.overlaysUrl)
         .then(resp => resp.json())
-        .then(json => json.forEach(layerConf => this.createWmsLayer(layerConf)));
+        .then(json => json.forEach(layerConf => {
+          if(layerConf.type === 'wms'){
+            this.addWmsLayer(layerConf)
+          } else if(layerConf.type === 'geojson'){
+            this.loadGeoJsonData(layerConf)
+          }
+        }));
     }
   }
 
-  createWmsLayer(layerConfig){
+  addWmsLayer(layerConfig){
     if (layerConfig) {
       const wmsLayer = L.tileLayer.wms(layerConfig.url, layerConfig.options);
       wmsLayer.setOpacity(layerConfig.opacity);
-      wmsLayer.addTo(this.map);
+      this.layersControl.addBaseLayer(wmsLayer, layerConfig.name);
     }
   }
 
-
-  initGeoJSONOverlays() {
-    if (this.geoJSONOverlaysUrl) {
-      fetch(this.geoJSONOverlaysUrl)
-        .then(resp => resp.json())
-        .then(json => json.forEach(layerConf => this.loadGeoJsonData(layerConf)));
-    }
-  }
 
   loadGeoJsonData(layerConfig){
     if (layerConfig.url) {
@@ -138,11 +144,33 @@ class MapViewer extends HTMLElement {
 
   createGeoJsonLayer(data, layerConfig){
     if (data) {
-      const options = { pointToLayer: (feature, latlng) => Function(layerConfig.pointToLayer)(feature, latlng) };
+      const options = {
+        onEachFeature: (feature, layer) => this.onEachFeature(feature, layer, layerConfig)
+      };
+
+      if (layerConfig.markerOptions) {
+        options.pointToLayer = (feature, latlng) => L.circleMarker(latlng, layerConfig.markerOptions);
+      }
+
+      if (layerConfig.style) {
+        options.style = layerConfig.style;
+      }
    
-      const geoJsonLayer = L.geoJSON(data);
+      const geoJsonLayer = L.geoJSON(data, options);
      
-      geoJsonLayer.addTo(this.map);
+      this.layersControl.addBaseLayer(geoJsonLayer, layerConfig.name);
+    }
+  }
+
+  onEachFeature(feature, layer, layerConfig) {
+    if (feature.properties && layerConfig.popupProperties && layerConfig.popupProperties.length > 0) {
+      const container = document.createElement('div');
+      layerConfig.popupProperties.forEach(popupProperty => {
+        const span = document.createElement('span');
+        span.innerHTML = `<b>${popupProperty.label}</b>: ${feature.properties[popupProperty.name]}<br>`;
+        container.appendChild(span);
+      });
+      layer.bindPopup(container);
     }
   }
 

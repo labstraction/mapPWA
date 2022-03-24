@@ -1,8 +1,0 @@
-
-[
-  {
-    "name": "River",
-    "url": "http://geoserver.emodnet-physics.eu/geoserver/emodnet/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=emodnet%3Adat_platformmapcache&outputFormat=application%2Fjson&CQL_FILTER=platformtypeid%3D23 and projectsdescr%3D'%3BPSMSL%3B'",
-    "pointToLayer": "{return L.circleMarker(latlng)}"
-  }
-]

@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <base href="/mapPWA/">
+  <!-- <base href="/mapPWA/"> -->
   <title>map PWA</title>
-  <link rel="canonical" href="https://labstraction.github.io/mapPWA/"/>
-  <link rel="manifest" href="./manifest.json">
+  <!-- <link rel="canonical" href="https://labstraction.github.io/mapPWA/"/> -->
+  <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./css/style.css">
   <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
   <link rel="apple-touch-icon" href="./images/icon_152.png">
@@ -16,13 +16,22 @@
   <meta name="apple-mobile-web-app-title" content="map PWA">
   <meta name="msapplication-TileImage" content="./images/icon_144.png">
   <meta name="msapplication-TileColor" content="#000000">
-  <script src="./js/leaflet.min.js"></script>
-  <script src="./js/map-viewer.js"></script>
+  <script src="./js/leaflet/leaflet.min.js"></script>
+  <script type="module" src="./js/map-viewer.js"></script>
+  <script type="module" src="./js/map-legend.js"></script>
+  <script type="module" src="./js/logo-menu.js"></script>
   <script src="./js/main.js"></script>
 </head>
 <body>
+  <logo-menu
+  image-url="./images/logo.png"
+  ></logo-menu>
   <map-viewer 
-  theme="tomato"
+  theme="teal"
+  overlays-url="./settings/layers.json"
   ></map-viewer>
+  <map-legend
+  vertical="false"
+  ></map-legend>
 </body>
 </html>
