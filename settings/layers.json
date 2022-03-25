@@ -2,7 +2,7 @@
   {
     "name": "Temperatura 2m (GFS)",
     "url": "http://188.166.63.249/thredds/wms/SINDBAD-GFS-1HR/SINDBAD-GFS-Temperature_height_above_ground.nc?",
-    "opacity": 0.5,
+    "opacity": 0.7,
     "type": "wms",
     "options": {
       "layers": "Temperature_height_above_ground",

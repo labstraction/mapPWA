@@ -9,3 +9,4 @@
 
 
 
+document.addEventListener('map-clicked', (e) => console.log("event",e));

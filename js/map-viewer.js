@@ -74,6 +74,7 @@ class MapViewer extends HTMLElement {
     mapDiv.style.width = '100%';
     mapDiv.style.height = '100%';
     mapDiv.style.backgroundColor = this.theme;
+    mapDiv.style.cursor = 'pointer';
     this.shadowRoot.appendChild(mapDiv);
 
     let mapOptions = {
@@ -129,8 +130,15 @@ class MapViewer extends HTMLElement {
     if (layerConfig) {
       const wmsLayer = L.tileLayer.wms(layerConfig.url, layerConfig.options);
       wmsLayer.setOpacity(layerConfig.opacity);
+      
       this.layersControl.addBaseLayer(wmsLayer, layerConfig.name);
     }
+  }
+
+  emit(eventName, data) {
+    console.log(eventName, data);
+    const event = new CustomEvent(eventName, { detail: data, bubbles: true });
+    this.dispatchEvent(event);
   }
 
 

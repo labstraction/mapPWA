@@ -19,7 +19,8 @@ class LogoMenu extends HTMLElement {
     this.imageUrl = this.getAttributeOrDefault('image-url', "");
     this.backgroundColor = this.getAttributeOrDefault('background-color', 'white');
     this.width = this.getAttributeOrDefault('width', '60px');
-    this.height = this.getAttributeOrDefault('height', '60px');
+    this.maxWidth = this.getAttributeOrDefault('max-width', '30vw');
+    this.href = this.getAttributeOrDefault('href', '/');
   }
 
   getAttributeOrDefault(attribute, defaultValue) {
@@ -38,17 +39,17 @@ class LogoMenu extends HTMLElement {
     container.style.backgroundColor = this.backgroundColor || 'transparent';
     container.style.padding = '4px';
     container.style.borderRadius = '4px';
-    if (this.width) {
-      container.style.width = this.width;
-    } else {
-      container.style.height = this.height;
-    }
+    container.style.maxWidth = this.maxWidth;
+    container.style.width = this.width;
+    container.style.cursor = 'pointer';
+
+    //console.log(document.referrer);
 
     const image = document.createElement('img');
     image.src = this.imageUrl;
     image.style.width = '100%';
     image.style.height = '100%';
-    image.style.objectFit = 'contain';
+    image.addEventListener('click', () => window.location.href = this.href);
 
     container.appendChild(image);
 

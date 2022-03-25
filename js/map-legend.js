@@ -49,7 +49,7 @@ class MapLegend extends HTMLElement {
       span.style.display = 'flex';
       span.style.alignItems = 'center';
       span.style.justifyContent = 'center';
-      span.style.fontSize = '0.8em';
+      span.style.fontSize = '0.6em';
       if (i === 0 || i === this.colors.length - 1) {
         const text = this.roundTo(this.getStep(this.min, this.max, this.colors.length, this.isLog, i), 1) + ' ' + this.unit;
         span.appendChild(document.createTextNode(text));
