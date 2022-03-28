@@ -1,43 +1,106 @@
 'use strict'
 
 
-class MapLegend extends HTMLElement {
-
-
+export class MapLegend extends HTMLElement {
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
   }
 
-  connectedCallback() {
-    this.defineAttributes();
-    this.initTag()
+  get min(){
+    return parseFloat(this.getAttributeOrDefault('min'));
+  }
+  set min(value){
+    this.setNewAttribute('min', value)
   }
 
-  defineAttributes() {
-    this.min = parseFloat(this.getAttributeOrDefault('min', '0'));
-    this.max = parseFloat(this.getAttributeOrDefault('max', '10'));
-    this.isLog = this.getAttributeOrDefault('log', 'false') === 'true';
-    this.isVertical = this.getAttributeOrDefault('vertical', 'false') === 'true';
-    this.colors = this.getAttributeOrDefault('colors', '#000000,#222222,#444444,#666666,#888888,#AAAAAA,#CCCCCC,#EEEEEE').split(',');
-    this.unit = this.getAttributeOrDefault('unit', '');
+  get max(){
+    return parseFloat(this.getAttributeOrDefault('max', ''));
+  }
+  set max(value){
+    this.setNewAttribute('max', value)
+  }
+
+  get isLog(){
+    return this.getAttributeOrDefault('log', 'false') === 'true';
+  }
+  set isLog(value){
+    this.setNewAttribute('log', value)
+  }
+  
+  get unit(){
+    return this.getAttributeOrDefault('unit', '');
+  }
+  set unit(value){
+    this.setNewAttribute('unit', value)
+  }
+  
+  get name(){
+    return this.getAttributeOrDefault('name', 'x-rainbow');
+  }
+  set name(value){
+    if (value) {this.setNewAttribute('min', value)}
+  }
+
+  get isVertical(){
+    return this.getAttributeOrDefault('position', 'bottom') === 'left' 
+        || this.getAttributeOrDefault('position', 'bottom') === 'right';
+  }
+
+  get isTop(){
+    return this.getAttributeOrDefault('position', 'bottom') === 'top';
+  }
+
+  get isLeft(){
+    return this.getAttributeOrDefault('position', 'bottom') === 'left';
+  }
+
+  get size(){
+    return parseInt(this.getAttributeOrDefault('size', '18'));
   }
 
   getAttributeOrDefault(attribute, defaultValue) {
     if (this.hasAttribute(attribute)) {
       return this.getAttribute(attribute);
-    } else {
+    } else if (defaultValue) {
       this.setAttribute(attribute, defaultValue);
       return defaultValue;
     }
   }
 
-  initTag() {
+  setNewAttribute(attribute, newValue) {
+    if(newValue !== this.getAttribute(attribute)){
+      this.setAttribute(newValue)
+    }
+  }
+
+  connectedCallback() {
+    this.initComponent()
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue !== newValue ) {
+      this[name] = newValue
+      this.initComponent()
+    }
+    
+  } 
+  static get observedAttributes() { return ['min', 'max', 'isLog', 'name', 'unit']; }
+
+  async initComponent() {
+
+    this.shadowRoot.innerHTML = '';
+
+    const palettes =  await fetch("../settings/palette.json").then(resp => resp.json()).catch(e => console.log(e));
+    this.colors = palettes[this.name];
+    if (!this.colors) {
+      return;
+    }
 
     const container = document.createElement('div');
-    container.style.width = '100%';
-    container.style.height = '100%';
+    container.style.width = this.isVertical ? this.size + 'px' : '100%';
+    container.style.height =this.isVertical ? '100%' : this.size + 'px';
     container.style.display = 'flex';
     container.style.flexDirection = this.isVertical ? 'column-reverse' : "row";
 
@@ -49,9 +112,16 @@ class MapLegend extends HTMLElement {
       span.style.display = 'flex';
       span.style.alignItems = 'center';
       span.style.justifyContent = 'center';
-      span.style.fontSize = '0.8em';
+      span.style.fontSize = '0.6em';
+      span.style.fontWeight = 'bold';
+
+      let text = '';
+      if (this.min !== undefined && this.max !== undefined) {
+        text = this.roundTo(this.getStep(this.min, this.max, this.colors.length, this.isLog, i), 1) + (this.unit || '');
+        span.addEventListener('mouseover', (e) => this.showTooltip(e, text, span.style.color, span.style.backgroundColor));
+      }
+
       if (i === 0 || i === this.colors.length - 1) {
-        const text = this.roundTo(this.getStep(this.min, this.max, this.colors.length, this.isLog, i), 1) + ' ' + this.unit;
         span.appendChild(document.createTextNode(text));
         if (this.isVertical) {
           span.style.minHeight = '30px';
@@ -59,13 +129,44 @@ class MapLegend extends HTMLElement {
           span.style.minWidth = '30px';
         }
       }
-    container.appendChild(span);
+      container.appendChild(span);
     }
     this.shadowRoot.appendChild(container);
   }
 
+  showTooltip(event, text, color, backgroundColor){
+    if (document.getElementById('map-legend-tooltip')) {
+      document.body.removeChild(document.getElementById('map-legend-tooltip'));
+    }
+    const tooltip = document.createElement('div');
+    document.querySelector('body').appendChild(tooltip);
+    tooltip.appendChild(document.createTextNode(text));
+    
+    tooltip.style.position = 'absolute';
+    tooltip.style.position = 'absolute';
+    tooltip.style.color = color;
+    tooltip.style.backgroundColor = backgroundColor;
+    tooltip.style.padding = "4px";
+    tooltip.style.borderRadius = "8px";
+    tooltip.style.zIndex = 1000000;
+    tooltip.id = 'map-legend-tooltip'
+    const topOffset =  this.isTop ? tooltip.offsetHeight : (-tooltip.offsetHeight);
+    const leftOffset =  this.isLeft ? tooltip.offsetWidth : (-tooltip.offsetWidth);
+    tooltip.style.top = (this.isVertical ? (event.clientY - tooltip.offsetHeight / 2) : (event.clientY + topOffset))  + 'px';
+    tooltip.style.left = (this.isVertical ? (event.clientX + leftOffset) : (event.clientX - tooltip.offsetWidth / 2)) + 'px';
+    
+    document.body.appendChild(tooltip);
 
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+    this.timer = setTimeout(() => {
+      if (document.getElementById('map-legend-tooltip')) {
+        document.body.removeChild(document.getElementById('map-legend-tooltip'));
+      }
+    }, 1000);
 
+  }
 
   getStep(min, max, stepNumber, isLog, index) {
     if (isLog) {
@@ -74,7 +175,6 @@ class MapLegend extends HTMLElement {
       const step = (maxLog - minLog) / (stepNumber - 1);
       return Math.exp(minLog + step * index);
     } else {
-      console.log('pippo', ((max - min) / (stepNumber - 1)) * index)
       return ((max - min) / (stepNumber - 1)) * index;
     }
   }
@@ -107,10 +207,6 @@ class MapLegend extends HTMLElement {
     return Math.round(n) / multiplicator;
   }
 
-
 }
-
-
-
 
 customElements.define('map-legend', MapLegend);

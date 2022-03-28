@@ -1,9 +1,16 @@
 [
   {
     "name": "Temperatura 2m (GFS)",
+    "active": true,
     "url": "http://188.166.63.249/thredds/wms/SINDBAD-GFS-1HR/SINDBAD-GFS-Temperature_height_above_ground.nc?",
-    "opacity": 0.5,
+    "opacity": 0.7,
     "type": "wms",
+    "legend": {
+      "min": 0,
+      "max": 50,
+      "name": "x-rainbow",
+      "unit": "c"
+    },
     "options": {
       "layers": "Temperature_height_above_ground",
       "format": "image/png",
@@ -18,20 +25,28 @@
     }
   },
   {
-    "name": "River",
-    "type": "geojson",
-    "url": "http://geoserver.emodnet-physics.eu/geoserver/emodnet/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=emodnet%3Adat_platformmapcache&outputFormat=application%2Fjson&CQL_FILTER=platformtypeid%3D23 and projectsdescr%3D'%3BPSMSL%3B'",
-    "markerOptions": {
-      "radius": 5,
-      "fillColor": "#ff7800",
-      "color": "#000",
-      "weight": 1,
-      "opacity": 1,
-      "fillOpacity": 0.8
+    "name": "Cloud Cover (10Km)",
+    "active": false,
+    "url": "http://188.166.63.249/thredds/wms/grib/SINDBAD-FAT?",
+    "opacity": 0.7,
+    "type": "wms",
+    "legend": {
+      "min": 0,
+      "max": 100,
+      "name": "grayscale",
+      "unit": "%"
     },
-    "popupProperties": [
-      {"label": "id", "name": "platformid"},
-      {"label": "code", "name": "platformcode"}
-    ]
+    "options": {
+      "layers": "Total_cloud_cover_surface_layer",
+      "format": "image/png",
+      "transparent": true,
+      "tiled": true,
+      "styles": "boxfill/greyscale",
+      "colorscalerange": "0.001,100",
+      "logscale": false,
+      "abovemaxcolor": "extend",
+      "belowmincolor": "extend"
+    }
   }
 ]
+
