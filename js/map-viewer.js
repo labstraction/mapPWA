@@ -149,6 +149,7 @@ class MapViewer extends HTMLElement {
       });
       wmsLayer.on("remove", _=> this.selectedLayers.splice(this.selectedLayers.indexOf(layerConfig)));
       wmsLayer.setOpacity(layerConfig.opacity);
+      
       this.layersControl.addBaseLayer(wmsLayer, layerConfig.name);
       if (layerConfig.active) {
         this.map.addLayer(wmsLayer);
