@@ -40,7 +40,7 @@ export class MapLegend extends HTMLElement {
     return this.getAttributeOrDefault('name', 'x-rainbow');
   }
   set name(value){
-    if (value) {this.setNewAttribute('min', value)}
+    if (value) {this.setNewAttribute('name', value)}
   }
 
   get isVertical(){
@@ -71,7 +71,7 @@ export class MapLegend extends HTMLElement {
 
   setNewAttribute(attribute, newValue) {
     if(newValue !== this.getAttribute(attribute)){
-      this.setAttribute(newValue)
+      this.setAttribute(attribute, newValue);
     }
   }
 
