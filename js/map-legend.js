@@ -92,7 +92,7 @@ export class MapLegend extends HTMLElement {
 
     this.shadowRoot.innerHTML = '';
 
-    const palettes =  await fetch("../settings/palette.json").then(resp => resp.json()).catch(e => console.log(e));
+    const palettes =  await fetch("./../settings/palette.json").then(resp => resp.json()).catch(e => console.log(e));
     this.colors = palettes[this.name];
     if (!this.colors) {
       return;
